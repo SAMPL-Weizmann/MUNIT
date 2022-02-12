@@ -16,6 +16,7 @@ import os
 import sys
 import tensorboardX
 import shutil
+import wandb
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, default='configs/edges2handbags_folder.yaml', help='Path to the config file.')
@@ -27,6 +28,7 @@ opts = parser.parse_args()
 cudnn.benchmark = True
 
 # Load experiment setting
+wandb.init(project="us2ct")
 config = get_config(opts.config)
 max_iter = config['max_iter']
 display_size = config['display_size']

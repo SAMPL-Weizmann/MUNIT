@@ -2,13 +2,14 @@
 Copyright (C) 2018 NVIDIA Corporation.  All rights reserved.
 Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 """
-from torch.utils.serialization import load_lua
+import wandb
 from torch.utils.data import DataLoader
 from networks import Vgg16
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
 from torchvision import transforms
 from data import ImageFilelist, ImageFolder
+import torchfile
 import torch
 import torch.nn as nn
 import os
@@ -175,7 +176,6 @@ def write_loss(iterations, trainer, train_writer):
     for m in members:
         train_writer.add_scalar(m, getattr(trainer, m), iterations + 1)
 
-
 def slerp(val, low, high):
     """
     original: Animating Rotation with Quaternion Curves, Ken Shoemake
@@ -225,7 +225,7 @@ def load_vgg16(model_dir):
     if not os.path.exists(os.path.join(model_dir, 'vgg16.weight')):
         if not os.path.exists(os.path.join(model_dir, 'vgg16.t7')):
             os.system('wget https://www.dropbox.com/s/76l3rt4kyi3s8x7/vgg16.t7?dl=1 -O ' + os.path.join(model_dir, 'vgg16.t7'))
-        vgglua = load_lua(os.path.join(model_dir, 'vgg16.t7'))
+        vgglua = torchfile.load(os.path.join(model_dir, 'vgg16.t7'))
         vgg = Vgg16()
         for (src, dst) in zip(vgglua.parameters()[0], vgg.parameters()):
             dst.data[:] = src
